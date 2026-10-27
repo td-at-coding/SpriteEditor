@@ -1,4 +1,7 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <iostream>
 #include "sprite/graphics/EditorWindow.h"
 #include "sprite/graphics/MeasureSection.h"
@@ -22,20 +25,43 @@ int main()
 
     sprite::graphics::MeasureSection meaSec(font);
 
-    sf::Text text(font);
-    text.setString("Hello, World!");
-    text.setCharacterSize(24);
-    auto bounds = text.getGlobalBounds();
-    auto windowSize = window.getSize();
-    auto textPos = sf::Vector2f(windowSize.x / 2.0f - bounds.size.x / 2.0f, windowSize.y / 2.0f - bounds.size.y / 2.0f);
-    text.setPosition(textPos);
-
     while (window.isOpen())
     {
         while (auto event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
                 window.close();
+            else if(const auto* buttonEvent = event->getIf<sf::Event::MouseButtonPressed>())
+            {
+                const auto& text = meaSec.getText();
+                auto textBoundOne = text.getGlobalBounds();
+                auto textBoundTwo = text.getGlobalBounds();
+                textBoundOne.size.x/=2;
+                textBoundTwo.position.x += textBoundTwo.size.x/2;
+                textBoundTwo.size.x/=2;
+                if(buttonEvent->button == sf::Mouse::Button::Left)
+                {
+                    if(textBoundOne.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    {
+                        meaSec.increaseColumns();
+                    }
+                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    {
+                        meaSec.increaseRows();
+                    }
+                }
+                else if(buttonEvent->button == sf::Mouse::Button::Right)
+                {
+                    if(textBoundOne.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    {
+                        meaSec.decreaseColumns();
+                    }
+                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    {
+                        meaSec.decreaseRows();
+                    }
+                }
+            }
         }
 
         window.clear();

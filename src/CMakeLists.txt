@@ -9,4 +9,5 @@ add_library(
     sprite_editor_library STATIC 
     sprite/graphics/EditorWindow.cpp
     sprite/graphics/MeasureSection.cpp
+    sprite/core/constants.cpp
 )
