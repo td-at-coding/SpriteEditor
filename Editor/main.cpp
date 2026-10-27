@@ -1,31 +1,16 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "sprite/graphics/EditorWindow.h"
 
-// If you are using C++17 or later, you can also use std::filesystem::path
+
 #ifndef SOURCE_DIR
 #define SOURCE_DIR "unknown"
 #endif
 
 int main()
 {
-    sf::Vector2u windowSize(800, 600);
-    sf::RenderWindow window(sf::VideoMode(windowSize), "SFML Window");
-    window.setFramerateLimit(60);
-
-    sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
-
-    std::cout << "SFM VERSION: "
-              << SFML_VERSION_MAJOR << "."
-              << SFML_VERSION_MINOR << "."
-              << SFML_VERSION_PATCH << std::endl;
-
-    // 3. Calculate the center position
-    int posX = (desktopMode.size.x - windowSize.x) / 2;
-    int posY = (desktopMode.size.y - windowSize.y) / 2;
-
-    // 4. Set the window position
-    //window.setPosition(sf::Vector2i(posX, posY));
-
+    sprite::graphics::EditorWindow window(800,600, "SpriteEditor");
+    
     sf::Font font;
     if(!font.openFromFile( SOURCE_DIR"/assets/PurisaBold.ttf"))
     {
@@ -38,6 +23,7 @@ int main()
     text.setString("Hello, World!");
     text.setCharacterSize(24);
     auto bounds = text.getGlobalBounds();
+    auto windowSize = window.getSize();
     auto textPos = sf::Vector2f(windowSize.x / 2.0f - bounds.size.x / 2.0f, windowSize.y / 2.0f - bounds.size.y / 2.0f);
     text.setPosition(textPos);
 

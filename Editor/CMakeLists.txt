@@ -11,4 +11,4 @@ target_compile_definitions(editor PRIVATE
     SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 
-target_link_libraries(editor PRIVATE SFML::Graphics)
+target_link_libraries(editor PRIVATE SFML::Graphics sprite_editor_library)
