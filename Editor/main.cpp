@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "sprite/graphics/EditorWindow.h"
+#include "sprite/graphics/MeasureSection.h"
 
 
 #ifndef SOURCE_DIR
@@ -18,6 +19,8 @@ int main()
         std::cerr << "Failed to load font!" << std::endl;
         return -1;
     }
+
+    sprite::graphics::MeasureSection meaSec(font);
 
     sf::Text text(font);
     text.setString("Hello, World!");
@@ -37,7 +40,7 @@ int main()
 
         window.clear();
 
-        window.draw(text);
+        window.draw(meaSec);
         window.display();
     }
     return 0;
