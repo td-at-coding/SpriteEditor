@@ -1,6 +1,7 @@
 #include "sprite/graphics/MeasureSection.h"
 #include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
+#include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "sprite/core/constants.h"
 #include <algorithm>
@@ -8,13 +9,13 @@
 
 namespace sprite::graphics 
 {
-    void MeasureSection::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        // Apply transform states if your class inherits from sf::Transformable
-        target.draw(SlicesText, states);
-    }
+    // void MeasureSection::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    //     // Apply transform states if your class inherits from sf::Transformable
+    //     target.draw(*this, states);
+    // }
 
     MeasureSection::MeasureSection(sf::Font& font, const sf::Vector2f& offset)
-        : SlicesText(font)
+        : sf::Text(font)
         , columnSlices(1)
         , rowSlices(1)
     {
@@ -23,11 +24,11 @@ namespace sprite::graphics
 
         ss << "Columns: " << columnSlices << " slice(s), Rows: " << rowSlices << " slice(s)";
 
-        SlicesText.setString(ss.str());
-        SlicesText.setCharacterSize(18);
+        setString(ss.str());
+        setCharacterSize(18);
         sf::Vector2f SlicesTextPos{0,0};
 
-        SlicesText.setPosition(SlicesTextPos + offset);
+        setPosition(SlicesTextPos + offset);
     }
 
     void MeasureSection::resetSlicesText()
@@ -37,7 +38,7 @@ namespace sprite::graphics
 
         ss << "Columns: " << columnSlices << " slice(s), Rows: " << rowSlices << " slice(s)";
 
-        SlicesText.setString(ss.str());
+        setString(ss.str());
     }
 
     void MeasureSection::increaseColumns()

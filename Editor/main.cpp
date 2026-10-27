@@ -33,9 +33,8 @@ int main()
                 window.close();
             else if(const auto* buttonEvent = event->getIf<sf::Event::MouseButtonPressed>())
             {
-                const auto& text = meaSec.getText();
-                auto textBoundOne = text.getGlobalBounds();
-                auto textBoundTwo = text.getGlobalBounds();
+                auto textBoundOne = meaSec.getGlobalBounds();
+                auto textBoundTwo = meaSec.getGlobalBounds();
                 textBoundOne.size.x/=2;
                 textBoundTwo.position.x += textBoundTwo.size.x/2;
                 textBoundTwo.size.x/=2;

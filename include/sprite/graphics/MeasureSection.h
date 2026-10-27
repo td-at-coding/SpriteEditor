@@ -8,16 +8,13 @@
 
 namespace sprite::graphics
 {
-class MeasureSection : public sf::Drawable 
+class MeasureSection : public sf::Text 
 {
 private:
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-    sf::Text SlicesText;
     unsigned columnSlices, rowSlices;
 public:
     MeasureSection(sf::Font& font, const sf::Vector2f& offset={0,0});
 
-    inline const sf::Text getText() const { return SlicesText; }
     void resetSlicesText();
     void increaseColumns();
     void increaseRows();
