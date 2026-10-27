@@ -8,5 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(Editor)
 
+add_subdirectory(thirdparty/SFML SYSTEM)
+
 
 add_executable(tests main.cpp)
