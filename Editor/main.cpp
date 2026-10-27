@@ -31,31 +31,31 @@ int main()
         {
             if (event->is<sf::Event::Closed>())
                 window.close();
-            else if(const auto* buttonEvent = event->getIf<sf::Event::MouseButtonPressed>())
+            else if(const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
             {
                 auto textBoundOne = meaSec.getGlobalBounds();
                 auto textBoundTwo = meaSec.getGlobalBounds();
                 textBoundOne.size.x/=2;
                 textBoundTwo.position.x += textBoundTwo.size.x/2;
                 textBoundTwo.size.x/=2;
-                if(buttonEvent->button == sf::Mouse::Button::Left)
+                if(mouseEvent->button == sf::Mouse::Button::Left)
                 {
-                    if(textBoundOne.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    if(textBoundOne.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
                     {
                         meaSec.increaseColumns();
                     }
-                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
                     {
                         meaSec.increaseRows();
                     }
                 }
-                else if(buttonEvent->button == sf::Mouse::Button::Right)
+                else if(mouseEvent->button == sf::Mouse::Button::Right)
                 {
-                    if(textBoundOne.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    if(textBoundOne.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
                     {
                         meaSec.decreaseColumns();
                     }
-                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(buttonEvent->position)))
+                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
                     {
                         meaSec.decreaseRows();
                     }

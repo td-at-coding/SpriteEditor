@@ -1,8 +1,6 @@
 #pragma once 
 
-#include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Font.hpp"
-#include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Vector2.hpp"
 

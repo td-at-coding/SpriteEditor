@@ -1,6 +1,5 @@
 #include "sprite/graphics/MeasureSection.h"
 #include "SFML/Graphics/Font.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "sprite/core/constants.h"
