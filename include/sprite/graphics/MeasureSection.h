@@ -18,6 +18,8 @@ public:
     void increaseRows();
     void decreaseColumns();
     void decreaseRows();
+    inline unsigned getColumnSlices() const {return columnSlices; }
+    inline unsigned getRowSlices() const {return rowSlices; }
 };
 
 }

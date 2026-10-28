@@ -19,6 +19,7 @@ namespace sprite::graphics
     public:
         void update() override;
         void manageEvents(const std::optional<sf::Event>& e);
+        inline const MeasureSection& getMeasureSection() const { return measureSection; }
         EditorScreen(sf::RenderWindow& window, sf::Font& font);
     };
 }
