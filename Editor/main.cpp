@@ -3,6 +3,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <iostream>
+#include "sprite/graphics/EditorScreen.h"
 #include "sprite/graphics/EditorWindow.h"
 #include "sprite/graphics/MeasureSection.h"
 
@@ -23,49 +24,15 @@ int main()
         return -1;
     }
 
-    sprite::graphics::MeasureSection meaSec(font);
+    sprite::graphics::EditorScreen screen(window, font);
 
     while (window.isOpen())
     {
-        while (auto event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-            else if(const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
-            {
-                auto textBoundOne = meaSec.getGlobalBounds();
-                auto textBoundTwo = meaSec.getGlobalBounds();
-                textBoundOne.size.x/=2;
-                textBoundTwo.position.x += textBoundTwo.size.x/2;
-                textBoundTwo.size.x/=2;
-                if(mouseEvent->button == sf::Mouse::Button::Left)
-                {
-                    if(textBoundOne.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
-                    {
-                        meaSec.increaseColumns();
-                    }
-                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
-                    {
-                        meaSec.increaseRows();
-                    }
-                }
-                else if(mouseEvent->button == sf::Mouse::Button::Right)
-                {
-                    if(textBoundOne.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
-                    {
-                        meaSec.decreaseColumns();
-                    }
-                    else if(textBoundTwo.contains(static_cast<sf::Vector2f>(mouseEvent->position)))
-                    {
-                        meaSec.decreaseRows();
-                    }
-                }
-            }
-        }
+        screen.update();
 
         window.clear();
 
-        window.draw(meaSec);
+        window.draw(screen);
         window.display();
     }
     return 0;
