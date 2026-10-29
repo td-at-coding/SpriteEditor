@@ -59,8 +59,6 @@ int main()
     const auto& meaSec = screen.getMeasureSection();
     int cols = meaSec.getColumnSlices();
     int rows = meaSec.getRowSlices();
-    std::cout << "Cols: " << cols << ", Rows: " << rows << std::endl;
-    std::cout << "Width: " << target_width << ", Height: " << target_height << std::endl;
     std::vector<sf::RectangleShape> rects;
 
     for(int i = 0; i < rows; i++)
@@ -92,8 +90,8 @@ int main()
                 for(int j = 0; j < cols; j++)
                 {
                     sf::RectangleShape rect;
-                    sf::Vector2f rectSize{target_width / (float)cols-2, target_height / (float)rows-2};
-                    sf::Vector2f rectPosition{1+j*rectSize.x, 1+meaSecBounds.size.y+i*rectSize.y};
+                    sf::Vector2f rectSize{target_width / (float)cols, target_height / (float)rows};
+                    sf::Vector2f rectPosition{j*rectSize.x, meaSecBounds.size.y+i*rectSize.y};
                     rect.setSize(rectSize);
                     rect.setPosition(rectPosition);
                     rect.setOutlineColor(sf::Color(255,0,0,100));
