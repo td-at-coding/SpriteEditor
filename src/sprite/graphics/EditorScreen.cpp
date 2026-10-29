@@ -6,6 +6,11 @@ namespace sprite::graphics
     void EditorScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const 
     {
         target.draw(measureSection, states);
+        target.draw(sprite, states);
+        for(const auto& rect : rects)
+        {
+            target.draw(rect, states);
+        }
     }
 
     void EditorScreen::update()
@@ -13,6 +18,11 @@ namespace sprite::graphics
         while (auto event = window.pollEvent())
         {
             manageEvents(event);
+        }
+
+        if(cols != measureSection.getColumnSlices() or rows != measureSection.getRowSlices())
+        {
+            rects = setupRects();
         }
     }
 
@@ -52,8 +62,63 @@ namespace sprite::graphics
             }
         }
     }
-    EditorScreen::EditorScreen(sf::RenderWindow& window, sf::Font& font)
+    EditorScreen::EditorScreen(
+        sf::RenderWindow& window
+        , sf::Font& font
+        , sf::Texture& texture
+    )
         : window(window)
         , measureSection(font)
+        , sprite{setupSprite(texture)}
+        , rects(setupRects())
+        , cols{measureSection.getColumnSlices()}
+        , rows{measureSection.getRowSlices()}
     {}
+
+    sf::Sprite EditorScreen::setupSprite(sf::Texture& texture)
+    {
+        sf::Vector2u textureSize = texture.getSize();
+        auto meaSecBounds = measureSection.getGlobalBounds();
+        auto windowSize = window.getSize();
+        sf::Sprite sprite{texture};
+        float target_width =windowSize.x;
+        float target_height = windowSize.y - meaSecBounds.size.y;
+
+        float scaleX = target_width / static_cast<float>(textureSize.x);
+        float scaleY = target_height / static_cast<float>(textureSize.y);
+
+        sprite.setScale({
+            scaleX
+            , scaleY
+        });
+
+        sprite.setPosition({0.f, meaSecBounds.size.y});
+        return sprite;
+    }
+
+    std::vector<sprite::graphics::SelectionRectangle> EditorScreen::setupRects()
+    {
+        auto meaSecBounds = measureSection.getGlobalBounds();
+        auto windowSize = window.getSize();
+        float target_width =windowSize.x;
+        float target_height = windowSize.y - meaSecBounds.size.y;
+
+        int cols = measureSection.getColumnSlices();
+        int rows = measureSection.getRowSlices();
+        std::vector<sprite::graphics::SelectionRectangle> rects;
+        for(int i = 0; i < rows; i++)
+        {
+            for(int j = 0; j < cols; j++)
+            {
+                sprite::graphics::SelectionRectangle rect;
+                sf::Vector2f rectSize{target_width / (float)cols-2, target_height / (float)rows-2};
+                sf::Vector2f rectPosition{1+j*rectSize.x, 1+meaSecBounds.size.y+i*rectSize.y};
+                rect.setSize(rectSize);
+                rect.setPosition(rectPosition);
+                rects.push_back(rect);
+            }
+        }
+        return rects;
+    }
+
 }

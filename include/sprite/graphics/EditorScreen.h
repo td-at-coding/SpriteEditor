@@ -1,11 +1,8 @@
 #pragma once 
-#include "SFML/Graphics/Font.hpp"
-#include "SFML/Graphics/RenderWindow.hpp"
-#include "SFML/Window/Event.hpp"
+#include <SFML/Graphics.hpp>
 #include "Screen.h"
-#include "SFML/Graphics/RenderStates.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
 #include "sprite/graphics/MeasureSection.h"
+#include "sprite/graphics/SelectionRectangle.h"
 
 namespace sprite::graphics
 {
@@ -16,10 +13,16 @@ namespace sprite::graphics
     private:
         MeasureSection measureSection;
         sf::RenderWindow& window;
+        sf::Sprite sprite;
+        unsigned cols, rows;
+
+        std::vector<sprite::graphics::SelectionRectangle> rects;
+        sf::Sprite setupSprite(sf::Texture& texture);
+        std::vector<sprite::graphics::SelectionRectangle> setupRects();
     public:
         void update() override;
         void manageEvents(const std::optional<sf::Event>& e);
         inline const MeasureSection& getMeasureSection() const { return measureSection; }
-        EditorScreen(sf::RenderWindow& window, sf::Font& font);
+        EditorScreen(sf::RenderWindow& window, sf::Font& font, sf::Texture& texture);
     };
 }

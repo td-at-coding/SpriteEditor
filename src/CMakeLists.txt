@@ -11,4 +11,5 @@ add_library(
     sprite/graphics/MeasureSection.cpp
     sprite/core/constants.cpp
     sprite/graphics/EditorScreen.cpp
+    sprite/graphics/SelectionRectangle.cpp
 )

@@ -10,6 +10,7 @@ add_subdirectory(src)
 add_subdirectory(Editor)
 
 add_subdirectory(thirdparty/SFML SYSTEM)
+add_subdirectory(thirdparty/TGUI SYSTEM)
 
 
 add_executable(tests main.cpp)

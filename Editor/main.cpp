@@ -11,11 +11,23 @@
 #include <vector>
 #include "sprite/graphics/EditorScreen.h"
 #include "sprite/graphics/EditorWindow.h"
+#include <TGUI/TGUI.hpp>
+#include <TGUI/Backend/SFML-Graphics.hpp>
+#include <sprite/graphics/SelectionRectangle.h>
 
 
 #ifndef SOURCE_DIR
 #define SOURCE_DIR "unknown"
 #endif
+
+
+
+enum StateMode
+{
+    SCREEN_EDITOR,
+    TEXT_EDIT
+};
+
 
 int main()
 {
@@ -37,79 +49,64 @@ int main()
         return -1;
     }
 
-    sf::Vector2u textureSize = player_texture.getSize();
-    
-    sprite::graphics::EditorScreen screen(window, font);
-    auto meaSecBounds = screen.getMeasureSection().getGlobalBounds();
-    auto windowSize = window.getSize();
-    sf::Sprite sprite{player_texture};
-    float target_width =windowSize.x;
-    float target_height = windowSize.y - meaSecBounds.size.y;
+    StateMode mode{TEXT_EDIT};
+    sprite::graphics::SelectionRectangle* rectPtr{nullptr};
 
-    float scaleX = target_width / static_cast<float>(textureSize.x);
-    float scaleY = target_height / static_cast<float>(textureSize.y);
+    //TGUI
 
-    sprite.setScale({
-        scaleX
-        , scaleY
+    tgui::Gui gui{window};
+
+    auto editBox = tgui::EditBox::create();
+    editBox->setSize(300, 40);
+    editBox->setPosition(250, 200);
+    editBox->setDefaultText("Click here to type...");
+    editBox->setTextSize(16);
+    editBox->getRenderer()->setBackgroundColor(tgui::Color::Red);
+
+    gui.add(editBox);
+
+    editBox->onReturnKeyPress([&](const tgui::String& text) {
+        if(rectPtr)
+        {
+            rectPtr->setName(text.toStdString());
+        }
+        mode = SCREEN_EDITOR;
+        std::cout << "Current text: " << text.toStdString() << std::endl;
     });
 
-
-    sprite.setPosition({0.f, meaSecBounds.size.y});
-    const auto& meaSec = screen.getMeasureSection();
-    int cols = meaSec.getColumnSlices();
-    int rows = meaSec.getRowSlices();
-    std::vector<sf::RectangleShape> rects;
-
-    for(int i = 0; i < rows; i++)
-    {
-        for(int j = 0; j < cols; j++)
-        {
-            sf::RectangleShape rect;
-            sf::Vector2f rectSize{target_width / (float)cols-2, target_height / (float)rows-2};
-            sf::Vector2f rectPosition{1+j*rectSize.x, 1+meaSecBounds.size.y+i*rectSize.y};
-            rect.setSize(rectSize);
-            rect.setPosition(rectPosition);
-            rect.setOutlineColor(sf::Color(255,0,0,100));
-            rect.setFillColor(sf::Color(0,0,0,100));
-            rect.setOutlineThickness(2);
-            rects.push_back(rect);
-        }
-    }
+    //SFML
+    sprite::graphics::EditorScreen screen(window, font, player_texture);
 
     while (window.isOpen())
     {
-        screen.update();
-        if(cols != meaSec.getColumnSlices() or rows != meaSec.getRowSlices())
+        switch(mode)
         {
-            rects.clear();
-            cols = meaSec.getColumnSlices();
-            rows = meaSec.getRowSlices();
-            for(int i = 0; i < rows; i++)
+        case SCREEN_EDITOR:
+        {
+            screen.update();
+            break;
+        }
+        case TEXT_EDIT:
+        {
+            while (auto e = window.pollEvent())
             {
-                for(int j = 0; j < cols; j++)
-                {
-                    sf::RectangleShape rect;
-                    sf::Vector2f rectSize{target_width / (float)cols, target_height / (float)rows};
-                    sf::Vector2f rectPosition{j*rectSize.x, meaSecBounds.size.y+i*rectSize.y};
-                    rect.setSize(rectSize);
-                    rect.setPosition(rectPosition);
-                    rect.setOutlineColor(sf::Color(255,0,0,100));
-                    rect.setFillColor(sf::Color(0,0,0,100));
-                    rect.setOutlineThickness(2);
-                    rects.push_back(rect);
-                }
+                gui.handleEvent(e.value());
+                if (e->is<sf::Event::Closed>())
+                    window.close();
             }
+            break;
+        }
         }
 
         window.clear();
 
         window.draw(screen);
-        window.draw(sprite);
-        for(int i = 0; i < rects.size(); i++)
+
+        if(mode == TEXT_EDIT)
         {
-            window.draw(rects[i]);
+            gui.draw();
         }
+
         window.display();
     }
     return 0;
