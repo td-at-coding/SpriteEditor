@@ -3,6 +3,7 @@ project(sprite_editor_library)
 include_directories(
     ../include
     ../thirdparty/SFML/include
+    ../thirdparty/TGUI/include
 )
 
 add_library(

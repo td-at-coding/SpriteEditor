@@ -3,6 +3,7 @@
 #include "Screen.h"
 #include "sprite/graphics/MeasureSection.h"
 #include "sprite/graphics/SelectionRectangle.h"
+#include "sprite/core/StateMode.h"
 
 namespace sprite::graphics
 {
@@ -15,14 +16,16 @@ namespace sprite::graphics
         sf::RenderWindow& window;
         sf::Sprite sprite;
         unsigned cols, rows;
-
+        sf::Font& font;
+        core::StateMode& mode;
         std::vector<sprite::graphics::SelectionRectangle> rects;
         sf::Sprite setupSprite(sf::Texture& texture);
         std::vector<sprite::graphics::SelectionRectangle> setupRects();
     public:
         void update() override;
+        void reset();
         void manageEvents(const std::optional<sf::Event>& e);
         inline const MeasureSection& getMeasureSection() const { return measureSection; }
-        EditorScreen(sf::RenderWindow& window, sf::Font& font, sf::Texture& texture);
+        EditorScreen(sf::RenderWindow& window, sf::Font& font, sf::Texture& texture, core::StateMode& mode);
     };
 }
