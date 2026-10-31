@@ -3,10 +3,12 @@
 #include <vector>
 #include "sprite/graphics/EditorScreen.h"
 #include "sprite/graphics/EditorWindow.h"
-#include <TGUI/TGUI.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
+#include <TGUI/TGUI.hpp>
 #include "sprite/graphics/SelectionRectangle.h"
 #include "sprite/core/StateMode.h"
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 #ifndef SOURCE_DIR
 #define SOURCE_DIR "unknown"
@@ -56,7 +58,8 @@ int main(int argc, char* argv[])
 
     gui.add(editBox);
 
-    editBox->onReturnKeyPress([&](const tgui::String& text) {
+    editBox->onReturnKeyPress([&](const tgui::String& text) 
+    {
         if(rectPtr)
         {
             rectPtr->setName(text.toStdString());
@@ -79,15 +82,24 @@ int main(int argc, char* argv[])
     gui.add(openFileDialog);
     
     sf::Texture texture;
+    std::string fileName = "";
     openFileDialog->onFileSelect([&](const tgui::Filesystem::Path& path)
     {
-        if(not texture.loadFromFile(path.asString().toStdString()))
+        fileName = path.asString().toStdString();
+        if(not texture.loadFromFile(fileName))
         {
             // Handle error
             std::cerr << "Failed to load texture!" << std::endl;
             exit(-1);
         }
-        screen = new sprite::graphics::EditorScreen(window, font, texture, mode);
+        nlohmann::json json;
+        std::fstream f(fileName+".json");
+        if(f.is_open())
+        {
+            f >> json;
+        }
+        screen = new sprite::graphics::EditorScreen(window, font, texture, mode, json, fileName);
+        mode = sprite::core::SCREEN_EDITOR;
     });
 
     while (window.isOpen())
@@ -133,5 +145,11 @@ int main(int argc, char* argv[])
         delete screen;
         screen = nullptr;
     }
+
+
+    gui.removeAllWidgets();
+    editBox = nullptr;
+
+
     return 0;
 }

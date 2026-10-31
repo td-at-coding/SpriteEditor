@@ -34,7 +34,7 @@ namespace sprite::graphics
     void SelectionRectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const 
     {
         target.draw(debugRect, states);
-        if(showText)
+        if(showText || nameHasChanged)
             target.draw(displayedName, states);
     }
 

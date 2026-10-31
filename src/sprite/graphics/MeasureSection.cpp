@@ -13,10 +13,14 @@ namespace sprite::graphics
     //     target.draw(*this, states);
     // }
 
-    MeasureSection::MeasureSection(sf::Font& font, const sf::Vector2f& offset)
+    MeasureSection::MeasureSection(
+        sf::Font& font
+        , const nlohmann::json& json
+        , const sf::Vector2f& offset
+    )
         : sf::Text(font)
-        , columnSlices(1)
-        , rowSlices(1)
+        , columnSlices{loadColumns(json)}
+        , rowSlices{loadRows(json)}
     {
 
         std::stringstream ss;
@@ -59,5 +63,26 @@ namespace sprite::graphics
     {
         rowSlices = std::max(rowSlices-1, core::minRowSlices);
         resetSlicesText();
+    }
+
+    unsigned MeasureSection::loadColumns(const nlohmann::json& json)
+    {
+        if(not json.empty())
+        {
+            unsigned value = json["data"]["columns"];
+            value = std::clamp(value, core::minColumnSlices, core::maxColumnSlices);
+            return value;
+        }
+        else return 1U;
+    }
+    unsigned MeasureSection::loadRows(const nlohmann::json& json)
+    {
+        if(not json.empty())
+        {
+            unsigned value = json["data"]["rows"];
+            value = std::clamp(value, core::minRowSlices, core::maxRowSlices);
+            return value;
+        }
+        else return 1U;
     }
 }

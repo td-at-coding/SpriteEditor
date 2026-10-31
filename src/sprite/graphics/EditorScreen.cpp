@@ -2,7 +2,7 @@
 #include "sprite/graphics/MeasureSection.h"
 #include <iostream>
 #include <TGUI/TGUI.hpp>
-#include <TGUI/Backend/SFML-Graphics.hpp>
+#include <fstream>
 
 extern sprite::graphics::SelectionRectangle* rectPtr;
 extern tgui::EditBox::Ptr editBox;
@@ -12,6 +12,7 @@ namespace sprite::graphics
     void EditorScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const 
     {
         target.draw(measureSection, states);
+        target.draw(saveText, states);
         target.draw(sprite, states);
         for(const auto& rect : rects)
         {
@@ -64,6 +65,14 @@ namespace sprite::graphics
                 {
                     measureSection.increaseRows();
                 }
+                else if(saveText.getGlobalBounds().contains(static_cast<sf::Vector2f>(mouseEvent->position)))
+                {
+                    std::string jsonFile = fileName +".json";
+                    std::ofstream f(jsonFile);
+                    f << *this;
+                    f.close();
+
+                }
 
                 for(auto& rect : rects)
                 {
@@ -93,16 +102,42 @@ namespace sprite::graphics
         , sf::Font& font
         , sf::Texture& texture
         , core::StateMode& mode
+        , const nlohmann::json& json
+        , const std::string& fileName
     )
         : window(window)
-        , measureSection(font)
+        , measureSection(font, json)
         , sprite{setupSprite(texture)}
-        , rects(setupRects())
+        , rects(setupInitialRects(json))
         , cols{measureSection.getColumnSlices()}
         , rows{measureSection.getRowSlices()}
         , font{font}
         , mode{mode}
-    {}
+        , fileName{fileName}
+        , saveText{font}
+    {
+        saveText.setString("Save");
+        saveText.setCharacterSize(18U);
+        auto textSize = saveText.getGlobalBounds();
+        auto windowSize = window.getSize();
+        sf::Vector2f textPos{windowSize.x - textSize.size.x, 0};
+        saveText.setPosition(textPos);
+    }
+
+    std::vector<SelectionRectangle> EditorScreen::setupInitialRects(const nlohmann::json& json)
+    {
+        std::vector<SelectionRectangle> rects = setupRects();
+        if(not json.empty())
+        {
+            for(const auto& sprite : json["data"]["sprites"])
+            {
+                for(const auto& id : sprite["ids"])
+                    rects[id].setName(sprite["name"]);
+            }
+            return rects;
+        }
+        else return rects;
+    }
 
     sf::Sprite EditorScreen::setupSprite(sf::Texture& texture)
     {
@@ -125,7 +160,7 @@ namespace sprite::graphics
         return sprite;
     }
 
-    std::vector<sprite::graphics::SelectionRectangle> EditorScreen::setupRects()
+    std::vector<SelectionRectangle> EditorScreen::setupRects()
     {
         auto meaSecBounds = measureSection.getGlobalBounds();
         auto windowSize = window.getSize();
@@ -134,13 +169,13 @@ namespace sprite::graphics
 
         int cols = measureSection.getColumnSlices();
         int rows = measureSection.getRowSlices();
-        std::vector<sprite::graphics::SelectionRectangle> rects;
+        std::vector<SelectionRectangle> rects;
         unsigned idx = 0;
         for(int i = 0; i < rows; i++)
         {
             for(int j = 0; j < cols; j++)
             {
-                sprite::graphics::SelectionRectangle rect(font, idx);
+                SelectionRectangle rect(font, idx);
                 sf::Vector2f rectSize{target_width / (float)cols-2, target_height / (float)rows-2};
                 sf::Vector2f rectPosition{1+j*rectSize.x, 1+meaSecBounds.size.y+i*rectSize.y};
                 rect.setSize(rectSize);
@@ -159,4 +194,33 @@ namespace sprite::graphics
             rect.setShowText(false);
         }
     }
+}
+
+std::ostream& operator<<(std::ostream& out, sprite::graphics::EditorScreen& screen)
+{
+    nlohmann::json json;
+    json["data"] = nlohmann::json::object();
+    json["data"]["columns"] = screen.getMeasureSection().getColumnSlices();
+    json["data"]["rows"] = screen.getMeasureSection().getRowSlices();
+
+    std::unordered_map<std::string, std::vector<unsigned>> map;
+    for(const auto& rect : screen.getRects())
+    {
+        if(rect.getNameHasChanged())
+        {
+            map[rect.getName()].push_back(rect.getId());
+        }
+    }
+    json["data"]["sprites"] = nlohmann::json::array();
+    for(const auto& p : map)
+    {
+        nlohmann::json jObject;
+        jObject["name"] = p.first;
+        jObject["ids"] = p.second;
+        json["data"]["sprites"].push_back(jObject);
+    }
+
+    out << json;
+
+    return out;
 }
